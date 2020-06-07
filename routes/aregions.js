@@ -65,10 +65,13 @@ module.exports = (app) => {
             const {title, description, language, population, regions, subdivisions, settlements, ...rest} = req.body;
             const region = {
                 localization: { [language]: {title, description} },
-                population: { [population.year]: population.quantity },
-                regions: regions.map(region => { return {region: ObjectId(region), period: region.period || null} }),
-                subdivisions: subdivisions.map(region => { return {region: ObjectId(region), period: region.period || null} }),
-                settlements: settlements.map(settlement => { return {settlement: ObjectId(settlement), period: settlement.period || null} }),
+                population: population.reduce((acc, pop) => {
+                    acc[pop.year] = pop.quantity;
+                    return acc;
+                }, {}),
+                regions: regions.map(region => { return {region: ObjectId(region.region), period: {from: region.from, to: region.to}} }),
+                subdivisions: subdivisions.map(region => { return {region: ObjectId(region.region), period: {from: region.from, to: region.to}} }),
+                settlements: settlements.map(settlement => { return {settlement: ObjectId(settlement.settlement), period: {from: settlement.from, to: settlement.to}} }),
                 ...rest
             };
 

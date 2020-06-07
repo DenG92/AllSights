@@ -1,0 +1,22 @@
+<div class="regions-wrapper">
+  <div class="card" *ngFor="let region of regions">
+    <div class="card-img" [style.background-image]="'url(./assets/regions/croatia.png)'"></div>
+    <div class="card-body">
+      <h5 class="card-title">{{ region.localization[language].title }}</h5>
+      <p class="card-text">Area: {{ region.area }}</p>
+      <p class="card-text">Population: {{ region.population[2001] }}</p>
+      <p class="card-text region-description">Description: {{ region.localization[language].description }}</p>
+      <p class="card-text">
+        <ng-container *ngFor="let region of region.regions">
+          {{region.localization[language].title}}
+        </ng-container>
+      </p>
+      <p class="card-text">
+        <ng-container *ngFor="let region of region.subdivisions">
+          {{region.localization[language].title}}
+        </ng-container>
+      </p>
+      <a class="btn btn-primary" [routerLink]="[region._id]">Details</a>
+    </div>
+  </div>
+</div>

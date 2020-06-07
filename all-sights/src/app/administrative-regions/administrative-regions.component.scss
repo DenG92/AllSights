@@ -1,0 +1,35 @@
+.regions-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+
+  .card {
+    background-color: rgba(0, 0, 0, 0.75);
+    border-radius: 15px;
+    box-sizing: content-box;
+    color: #fff;
+    margin: 10px;
+    width: 360px;
+
+    .card-img {
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      background-position: center;
+      background-size: cover;
+      height: 270px;
+    }
+
+    .card-title {
+      text-align: center;
+    }
+
+    .region-description {
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      display: block;
+      display: -webkit-box;
+      overflow: hidden;
+    }
+  }
+}

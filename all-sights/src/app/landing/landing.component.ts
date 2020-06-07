@@ -7,9 +7,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LandingComponent implements OnInit {
 
-  constructor() { }
+  public routes = [
+    { path: '/', title: 'Home' },
+    { path: '/regions', title: 'Regions' }
+  ];
 
-  ngOnInit() {
-  }
+  constructor() {}
+
+  ngOnInit() {}
 
 }

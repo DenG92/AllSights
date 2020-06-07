@@ -1,0 +1,12 @@
+<div class="card">
+  <div class="card-body">
+    <div class="list-group" *ngIf="region">
+      <span class="list-group-item">
+        {{ region.localization[language].title }}
+      </span>
+      <span class="list-group-item">
+        {{ region.period.from | date }} - {{(region.period.to | date) || 'present day' }}
+      </span>
+    </div>
+  </div>
+</div>

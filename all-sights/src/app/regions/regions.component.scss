@@ -1,0 +1,18 @@
+.regions-wrapper {
+  display: flex;
+
+  .card {
+    flex: 1 0 0;
+    margin: 25px;
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .btn {
+      display: block;
+    }
+  }
+}

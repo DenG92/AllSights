@@ -5,10 +5,4 @@ import { Component } from '@angular/core';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-
-  public routes = [
-    { path: '/', title: 'Home' },
-    { path: '/regions', title: 'Regions' }
-  ];
-}
+export class AppComponent {}

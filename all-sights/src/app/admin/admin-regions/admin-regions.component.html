@@ -1,0 +1,71 @@
+<div class="card">
+  <div class="card-body">
+    <button type="button" class="btn btn-primary" (click)="add()">Add region</button>
+  </div>
+  <div class="card-body">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th class="text-center" scope="col">Title</th>
+        <th class="text-center" scope="col">Area</th>
+        <th class="text-center" scope="col">Population</th>
+        <th class="text-center" scope="col">Regions</th>
+        <th class="text-center" scope="col">Subdivisions</th>
+        <th class="text-center" scope="col">Settlements</th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let region of regions">
+        <td>
+          <div class="list-group">
+            <span class="list-group-item text-center">
+              {{ region.localization[language].title }}
+            </span>
+            <span class="list-group-item text-center">
+              {{ region.period.from | date : 'yyyy.MM.dd' }} - {{(region.period.to | date : 'yyyy.MM.dd') || 'present day' }}
+            </span>
+          </div>
+        </td>
+        <td>
+          <span>{{ region.area }}</span>
+        </td>
+        <td>
+          <div class="list-group">
+            <span class="list-group-item" *ngFor="let year of region.population | keyvalue">
+              {{ year.key }}: {{ year.value }}
+            </span>
+          </div>
+        </td>
+        <td>
+          <div class="list-group">
+            <a class="list-group-item" [routerLink]="[item.id]" *ngFor="let item of region.regions">
+              {{ item.localization[language].title }}
+            </a>
+          </div>
+        </td>
+        <td>
+          <div class="list-group">
+            <a class="list-group-item" [routerLink]="[item.id]" *ngFor="let item of region.subdivisions">
+              {{ item.localization[language].title }}
+            </a>
+          </div>
+        </td>
+        <td>
+          <div class="list-group">
+            <a class="list-group-item" [routerLink]="[item.id]" *ngFor="let item of region.settlements">
+              {{ item.localization[language].title }}
+            </a>
+          </div>
+        </td>
+        <td>
+          <div class="list-group">
+            <button class="list-group-item" (click)="edit(region.id)">Edit</button>
+            <button class="list-group-item" (click)="delete(region.id)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
