@@ -1,5 +1,6 @@
 <div class="card">
-  <div class="card-body">
+  <div class="card-header">
+    <h3>Regions</h3>
     <button type="button" class="btn btn-primary" (click)="add()">Add region</button>
   </div>
   <div class="card-body">
@@ -28,7 +29,7 @@
           </div>
         </td>
         <td>
-          <span>{{ region.area }}</span>
+          <span>{{ region.area }} km<sup>2</sup></span>
         </td>
         <td>
           <div class="list-group">
@@ -53,7 +54,7 @@
         </td>
         <td>
           <div class="list-group">
-            <a class="list-group-item" [routerLink]="[item.id]" *ngFor="let item of region.settlements">
+            <a class="list-group-item" [routerLink]="['/admin/settlements/' + item.id]" *ngFor="let item of region.settlements">
               {{ item.localization[language].title }}
             </a>
           </div>

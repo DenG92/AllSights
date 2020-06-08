@@ -11,10 +11,12 @@ import { ApiService } from '../../_helpers/services/api.service';
 })
 export class EditAdministrativeRegionComponent implements OnInit {
 
-  public language = 'ua';
+  public language: string;
   public region: AdministrativeRegion;
 
-  constructor(private route: ActivatedRoute, private api: ApiService) {}
+  constructor(private route: ActivatedRoute, private api: ApiService) {
+    this.language = 'ua';
+  }
 
   ngOnInit() {
     this.route.params.subscribe(value => {

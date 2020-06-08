@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
-import { HttpClient} from '@angular/common/http';
+
+import { ApiService } from '../../_helpers/services/api.service';
 
 export interface Options {
   value: string;
@@ -26,7 +27,7 @@ export class AddAdministrativeRegionComponent implements OnInit {
 
   public get form() { return this.regionForm.controls; }
 
-  constructor(public router: Router, public http: HttpClient) {
+  constructor(public router: Router, public api: ApiService) {
     this.regionForm = new FormGroup({
       language: new FormControl('ua'),
       title: new FormControl(''),
@@ -52,20 +53,18 @@ export class AddAdministrativeRegionComponent implements OnInit {
   }
 
   getAutoCompleteOptions() {
-    const url = 'http://localhost:3000/api/regions/administrative/options';
     this.options = {regions: [], settlements: []};
-    this.http
-      .request<Options[]>('GET', url, {params: {type: 'regions', language: this.form.language.value}})
-      .subscribe((data: Options[]) => this.options.regions = data);
-    this.http
-      .request<Options[]>('GET', url, {params: {type: 'settlements', language: this.form.language.value}})
-      .subscribe((data: Options[]) => this.options.settlements = data);
+    this.api
+      .getData<Options[]>('regions/administrative/options', {language: this.form.language.value})
+      .subscribe((regions: Options[]) => this.options.regions = regions);
+    this.api
+      .getData<Options[]>('settlements/options', {language: this.form.language.value})
+      .subscribe((settlements: Options[]) => this.options.settlements = settlements);
   }
 
   getOptions() {
-    const url = 'http://localhost:3000/api/regions/administrative/options';
-    this.http
-      .request<OptionsResponse>('GET', url, {params: {language: this.form.language.value}})
+    this.api
+      .getData<OptionsResponse>('regions/administrative/options', {language: this.form.language.value})
       .subscribe((data: OptionsResponse) => {
         this.options = {
           regions: data.regions,
@@ -115,7 +114,7 @@ export class AddAdministrativeRegionComponent implements OnInit {
   }
 
   saveRegion() {
-    this.http.post('http://localhost:3000/api/regions/administrative', this.regionForm.value).subscribe(data => {
+    this.api.postData('regions/administrative', this.regionForm.value).subscribe(() => {
       this.router.navigateByUrl('admin/regions').then();
     });
   }

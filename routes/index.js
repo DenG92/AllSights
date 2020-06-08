@@ -4,4 +4,5 @@ module.exports = (app) => {
   });
   require('./users')(app);
   require('./aregions')(app);
+  require('./settlements')(app);
 };

@@ -6,13 +6,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent implements OnInit {
-  
-  public routes = [
-    { path: '/admin', title: 'Dashboard' },
-    { path: '/admin/regions', title: 'Regions' }
-  ];
 
-  constructor() {}
+  public routes: any[];
+
+  constructor() {
+    this.routes = [
+      { path: '/admin', title: 'Dashboard' },
+      { path: '/admin/regions', title: 'Regions' },
+      { path: '/admin/settlements', title: 'Settlements' }
+    ];
+  }
 
   ngOnInit() {}
 

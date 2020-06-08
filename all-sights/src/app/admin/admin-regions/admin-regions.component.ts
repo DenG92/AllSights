@@ -12,14 +12,16 @@ import { ApiService } from '../../_helpers/services/api.service';
 export class AdminRegionsComponent implements OnInit {
 
   public language: string;
-  public regions: any[];
+  public regions: AdministrativeRegion[];
 
   constructor(private router: Router, private api: ApiService) {
     this.language = 'ua';
-    this.getRegions();
+    this.regions = [];
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.getRegions();
+  }
 
   getRegions() {
     this.api

@@ -10,6 +10,8 @@ import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { AdminRegionsComponent } from './admin/admin-regions/admin-regions.component';
 import { AddAdministrativeRegionComponent } from './admin/add-administrative-region/add-administrative-region.component';
 import { EditAdministrativeRegionComponent } from './admin/edit-administrative-region/edit-administrative-region.component';
+import { AdminSettlementsComponent } from './admin/admin-settlements/admin-settlements.component';
+import { AddSettlementComponent } from './admin/add-settlement/add-settlement.component';
 
 
 const routes: Routes = [
@@ -64,6 +66,14 @@ const routes: Routes = [
       {
         path: 'regions/:id',
         component: EditAdministrativeRegionComponent
+      },
+      {
+        path: 'settlements',
+        component: AdminSettlementsComponent
+      },
+      {
+        path: 'settlements/add',
+        component: AddSettlementComponent
       }
     ]
   },

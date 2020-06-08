@@ -1,0 +1,53 @@
+<div class="card">
+  <div class="card-header">
+    <h3>Settlements</h3>
+    <button type="button" class="btn btn-primary" (click)="add()">Add settlement</button>
+  </div>
+  <div class="card-body">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th class="text-center" scope="col">Title</th>
+        <th class="text-center" scope="col">Area</th>
+        <th class="text-center" scope="col">Population</th>
+        <th class="text-center" scope="col">Regions</th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let settlement of settlements">
+        <td>
+          <div class="list-group">
+            <span class="list-group-item text-center">
+              {{ settlement.localization[language].title }}
+            </span>
+          </div>
+        </td>
+        <td>
+          <span>{{ settlement.area }} km<sup>2</sup></span>
+        </td>
+        <td>
+          <div class="list-group">
+            <span class="list-group-item" *ngFor="let year of settlement.population | keyvalue">
+              {{ year.key }}: {{ year.value }}
+            </span>
+          </div>
+        </td>
+        <td>
+          <div class="list-group">
+            <a class="list-group-item" [routerLink]="['/admin/regions/' + item.id]" *ngFor="let item of settlement.regions">
+              {{ item.localization[language].title }}
+            </a>
+          </div>
+        </td>
+        <td>
+          <div class="list-group">
+            <button class="list-group-item" (click)="edit(settlement.id)">Edit</button>
+            <button class="list-group-item" (click)="delete(settlement.id)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

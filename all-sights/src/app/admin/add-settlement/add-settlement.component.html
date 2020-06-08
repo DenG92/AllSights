@@ -1,0 +1,76 @@
+<div class="card">
+  <div class="card-body">
+    <form [formGroup]="settlementForm" style="width: 600px">
+      <div class="form-row">
+        <div class="col-4">
+          <div class="form-group">
+            <label>Language</label>
+            <select class="form-control" [formControlName]="'language'" title="Language">
+              <option value="en">English</option>
+              <option value="ua">Ukrainian</option>
+              <option value="ru">Russian</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-8">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" class="form-control" [formControlName]="'title'" title="Title">
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea class="form-control" [formControlName]="'description'" rows="5" title="Description"></textarea>
+      </div>
+      <fieldset class="form-group">
+        <label>Included in <i (click)="addRegion()">+</i></label>
+        <ng-container *ngFor="let region of form.regions.controls; let index = index">
+          <div class="form-row" [formGroup]="region">
+            <div class="col">
+              <select class="form-control" [formControlName]="'region'" title="Regions">
+                <option *ngFor="let region of regions" [value]="region.value">{{ region.label }}</option>
+              </select>
+            </div>
+            <div class="col">
+              <input type="date" class="form-control" [formControlName]="'from'" placeholder="Included from">
+            </div>
+            <div class="col">
+              <input type="date" class="form-control" [formControlName]="'to'" placeholder="Included to">
+            </div>
+            <div class="col-1">
+              <button class="btn btn-outline-dark" (click)="removeRegion(index)">
+                <i>-</i>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+        <!--<app-extra-select class="form-control" [selectId]="'supra-regions'" [options]="options.regions" [formControlName]="'regions'" style="height: auto;"></app-extra-select>-->
+      </fieldset>
+      <div class="form-group">
+        <label>Area</label>
+        <input type="number" class="form-control" [formControlName]="'area'" title="Area" aria-describedby="areaHelp">
+        <small id="areaHelp" class="form-text text-muted">Area of region in km2.</small>
+      </div>
+      <fieldset class="form-group">
+        <label>Population <i (click)="addPopulation()">+</i></label>
+        <ng-container *ngFor="let item of form.population.controls; let index = index">
+          <div class="form-row" [formGroup]="item">
+            <div class="col">
+              <input type="number" class="form-control" [formControlName]="'year'" placeholder="Year">
+            </div>
+            <div class="col">
+              <input type="number" class="form-control" [formControlName]="'quantity'" placeholder="Quantity">
+            </div>
+            <div class="col-1">
+              <button class="btn btn-outline-dark" (click)="removePopulation(index)">
+                <i>-</i>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </fieldset>
+      <button type="button" class="btn btn-primary" (click)="saveSettlement()">Save</button>
+    </form>
+  </div>
+</div>

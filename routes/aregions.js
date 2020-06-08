@@ -6,8 +6,7 @@ module.exports = (app) => {
     let localizedSettlements = {};
 
     app.all('/api/regions/administrative', function(req, res, next) {
-        app.locals.collection = app.locals.database.collection('administrativeRegions');
-        app.locals.collection
+        app.locals.database.collection('administrativeRegions')
             .find({})
             .toArray()
             .then(function (regions) {
@@ -28,7 +27,7 @@ module.exports = (app) => {
             .toArray()
             .then(function (settlements) {
                 localizedSettlements = settlements.reduce((result, settlement) => {
-                    result[settlement._id] = {_id: settlement._id, localization: settlement.localization};
+                    result[settlement._id] = settlement.localization;
                     return result;
                 }, {});
                 next()
@@ -39,6 +38,10 @@ module.exports = (app) => {
     });
 
     app.route('/api/regions/administrative')
+        .all(function (req, res, next) {
+            app.locals.collection = app.locals.database.collection('administrativeRegions');
+            next()
+        })
         .get(function (req, res) {
             app.locals.collection
                 .find({})
@@ -110,9 +113,8 @@ module.exports = (app) => {
         });
 
     app.get('/api/regions/administrative/options', function(req, res) {
-        const type = req.query['type'];
         const language = req.query['language'];
-        app.locals.database.collection(type === 'regions' ? 'administrativeRegions' : 'settlements')
+        app.locals.database.collection('administrativeRegions')
             .find({})
             .toArray()
             .then(function (data) {
@@ -129,6 +131,7 @@ module.exports = (app) => {
 
     app.route('/api/regions/administrative/:id')
         .all(function (req, res, next) {
+            app.locals.collection = app.locals.database.collection('administrativeRegions');
             if(!req.body) return res.sendStatus(400);
             next();
         })

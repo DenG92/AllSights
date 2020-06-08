@@ -24,7 +24,7 @@ export class ApiService {
   }
 
   postData<T>(url: string, body: {} = null, adapter: any = null): Observable<T> {
-    return this.http.post<T>(this.apiUrl + url, {body}).pipe(
+    return this.http.post<T>(this.apiUrl + url, body).pipe(
       map((data: T) => {
         if (adapter) {
           return Array.isArray(data) ? data.map(item => adapter.adapt(item)) : adapter.adapt(data);
@@ -35,7 +35,7 @@ export class ApiService {
   }
 
   putData<T>(url: string, body: {} = null, adapter: any = null): Observable<T> {
-    return this.http.put<T>(this.apiUrl + url, {body}).pipe(
+    return this.http.put<T>(this.apiUrl + url, body).pipe(
       map((data: T) => {
         if (adapter) {
           return Array.isArray(data) ? data.map(item => adapter.adapt(item)) : adapter.adapt(data);

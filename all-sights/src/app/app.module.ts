@@ -17,6 +17,9 @@ import { AddAdministrativeRegionComponent } from './admin/add-administrative-reg
 import { EditAdministrativeRegionComponent } from './admin/edit-administrative-region/edit-administrative-region.component';
 
 import { ExtraSelectComponent } from './extra-select/extra-select.component';
+import { AdminSettlementsComponent } from './admin/admin-settlements/admin-settlements.component';
+import { AddSettlementComponent } from './admin/add-settlement/add-settlement.component';
+import { EditSettlementComponent } from './admin/edit-settlement/edit-settlement.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +33,10 @@ import { ExtraSelectComponent } from './extra-select/extra-select.component';
     AdminRegionsComponent,
     AddAdministrativeRegionComponent,
     EditAdministrativeRegionComponent,
-    ExtraSelectComponent
+    ExtraSelectComponent,
+    AdminSettlementsComponent,
+    AddSettlementComponent,
+    EditSettlementComponent
   ],
   imports: [
     BrowserModule,
