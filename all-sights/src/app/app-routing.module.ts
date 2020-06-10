@@ -12,6 +12,7 @@ import { AddAdministrativeRegionComponent } from './admin/add-administrative-reg
 import { EditAdministrativeRegionComponent } from './admin/edit-administrative-region/edit-administrative-region.component';
 import { AdminSettlementsComponent } from './admin/admin-settlements/admin-settlements.component';
 import { AddSettlementComponent } from './admin/add-settlement/add-settlement.component';
+import { EditSettlementComponent } from './admin/edit-settlement/edit-settlement.component';
 
 
 const routes: Routes = [
@@ -74,6 +75,10 @@ const routes: Routes = [
       {
         path: 'settlements/add',
         component: AddSettlementComponent
+      },
+      {
+        path: 'settlements/:id',
+        component: EditSettlementComponent
       }
     ]
   },

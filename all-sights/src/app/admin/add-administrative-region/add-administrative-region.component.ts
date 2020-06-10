@@ -43,16 +43,16 @@ export class AddAdministrativeRegionComponent implements OnInit {
       subdivisions: new FormArray([]),
       settlements: new FormArray([])
     });
-    this.getAutoCompleteOptions();
+    this.getOptions();
   }
 
   ngOnInit() {
     this.form.language.valueChanges.subscribe(() => {
-      this.getAutoCompleteOptions();
+      this.getOptions();
     });
   }
 
-  getAutoCompleteOptions() {
+  getOptions() {
     this.options = {regions: [], settlements: []};
     this.api
       .getData<Options[]>('regions/administrative/options', {language: this.form.language.value})
@@ -60,17 +60,6 @@ export class AddAdministrativeRegionComponent implements OnInit {
     this.api
       .getData<Options[]>('settlements/options', {language: this.form.language.value})
       .subscribe((settlements: Options[]) => this.options.settlements = settlements);
-  }
-
-  getOptions() {
-    this.api
-      .getData<OptionsResponse>('regions/administrative/options', {language: this.form.language.value})
-      .subscribe((data: OptionsResponse) => {
-        this.options = {
-          regions: data.regions,
-          settlements: data.settlements
-        };
-      });
   }
 
   addRegion() {

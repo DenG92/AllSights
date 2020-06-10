@@ -1,12 +1,121 @@
 <div class="card">
   <div class="card-body">
     <div class="list-group" *ngIf="region">
-      <span class="list-group-item">
-        {{ region.localization[language].title }}
-      </span>
-      <span class="list-group-item">
-        {{ region.period.from | date }} - {{(region.period.to | date) || 'present day' }}
-      </span>
+      <div class="list-group-item">
+        <form *ngIf="localizationForm">
+          <ng-container *ngFor="let localization of localizationForm.controls; let index = index">
+            <div class="border border-info rounded p-3 mb-3" [formGroup]="localization">
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Language</label>
+                  <select class="form-control" [formControlName]="'language'" title="Language">
+                    <option value="en">English</option>
+                    <option value="ua">Ukrainian</option>
+                    <option value="ru">Russian</option>
+                  </select>
+                </div>
+                <div class="col form-group">
+                  <label>Title</label>
+                  <input type="text" class="form-control" [formControlName]="'title'" placeholder="Title">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Description</label>
+                  <textarea class="form-control" [formControlName]="'description'" rows="5" title="Description"></textarea>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col">
+                  <button type="button" class="btn btn-danger btn-block" (click)="deleteLocalization(localization, index)">
+                    Delete
+                  </button>
+                </div>
+                <div class="col">
+                  <button type="button" class="btn btn-success btn-block" (click)="updateLocalization(localization)" [disabled]="!localization.dirty">
+                    {{ localization.controls.language.disabled ? 'Update': 'Create' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </form>
+        <button type="button" class="btn btn-info btn-block" (click)="pushLocalization()">Add localization</button>
+      </div>
+      <div class="list-group-item">
+        <form *ngIf="regionsForm">
+          <ng-container *ngFor="let region of regionsForm.controls; let index = index">
+            <div class="border border-info rounded p-3 mb-3" [formGroup]="region">
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Included in</label>
+                  <select class="form-control" [formControlName]="'region'" title="Region">
+                    <option *ngFor="let region of options.regions" [value]="region.value">{{ region.label }}</option>
+                  </select>
+                </div>
+                <div class="col form-group">
+                  <label>Included from</label>
+                  <input type="date" class="form-control" [formControlName]="'from'" placeholder="Included from">
+                </div>
+                <div class="col form-group">
+                  <label>Included to</label>
+                  <input type="date" class="form-control" [formControlName]="'to'" placeholder="Included to">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col">
+                  <button type="button" class="btn btn-danger btn-block" (click)="deleteRegion('regions', 'subdivisions', region, index)">
+                    Delete
+                  </button>
+                </div>
+                <div class="col">
+                  <button type="button" class="btn btn-success btn-block" (click)="updateRegion('regions', 'subdivisions', region)" [disabled]="!region.dirty">
+                    {{ region.controls.region.disabled ? 'Update': 'Create' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </form>
+        <button type="button" class="btn btn-info btn-block" (click)="pushRegion()">Add region</button>
+      </div>
+      <div class="list-group-item">
+        <form *ngIf="subdivisionsForm">
+          <ng-container *ngFor="let region of subdivisionsForm.controls; let index = index">
+            <div class="border border-info rounded p-3 mb-3" [formGroup]="region">
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Includes</label>
+                  <select class="form-control" [formControlName]="'region'" title="Region">
+                    <option *ngFor="let region of options.regions" [value]="region.value">{{ region.label }}</option>
+                  </select>
+                </div>
+                <div class="col form-group">
+                  <label>Included from</label>
+                  <input type="date" class="form-control" [formControlName]="'from'" placeholder="Includes from">
+                </div>
+                <div class="col form-group">
+                  <label>Included to</label>
+                  <input type="date" class="form-control" [formControlName]="'to'" placeholder="Includes to">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col">
+                  <button type="button" class="btn btn-danger btn-block" (click)="deleteRegion('subdivisions', 'regions', region, index)">
+                    Delete
+                  </button>
+                </div>
+                <div class="col">
+                  <button type="button" class="btn btn-success btn-block" (click)="updateRegion('subdivisions', 'regions', region)" [disabled]="!region.dirty">
+                    {{ region.controls.region.disabled ? 'Update': 'Create' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </form>
+        <button type="button" class="btn btn-info btn-block" (click)="pushSubdivision()">Add subdivision</button>
+      </div>
     </div>
   </div>
 </div>

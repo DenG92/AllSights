@@ -5,7 +5,6 @@ module.exports = (app) => {
     let localizedRegions = {};
 
     app.all('/api/settlements', function(req, res, next) {
-        app.locals.collection = app.locals.database.collection('settlements');
         app.locals.database.collection('administrativeRegions')
             .find({})
             .toArray()
@@ -22,6 +21,10 @@ module.exports = (app) => {
     });
 
     app.route('/api/settlements')
+        .all(function (req, res, next) {
+            app.locals.collection = app.locals.database.collection('settlements');
+            next();
+        })
         .get(function (req, res) {
             app.locals.collection
                 .find({})
@@ -85,7 +88,7 @@ module.exports = (app) => {
 
     app.route('/api/settlements/:id')
         .all(function (req, res, next) {
-            if(!req.body) return res.sendStatus(400);
+            app.locals.collection = app.locals.database.collection('settlements');
             next();
         })
         .get(function (req, res) {
@@ -104,8 +107,9 @@ module.exports = (app) => {
         })
         .put(function (req, res) {
             const id = ObjectId(req.params.id);
+            console.log(req.body);
 
-            app.locals.collection
+            /*app.locals.collection
                 .findOneAndUpdate({_id: id}, {$set: {}}, {returnOriginal: false})
                 .then(function (result) {
                     const settlement = result.value;
@@ -113,7 +117,7 @@ module.exports = (app) => {
                 })
                 .catch(function (err) {
                     console.log(err);
-                });
+                });*/
         })
         .delete(function (req, res) {
             const id = new ObjectId(req.params.id);
@@ -133,5 +137,4 @@ module.exports = (app) => {
                     console.log(err);
                 });
         });
-
 };
