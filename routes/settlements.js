@@ -46,10 +46,7 @@ module.exports = (app) => {
             const settlement = {
                 localization: { [language]: {title, description} },
                 area: area,
-                population: population.reduce((acc, pop) => {
-                    acc[pop.year] = pop.quantity;
-                    return acc;
-                }, {}),
+                population: population,
                 regions: regions.map(region => { return {region: ObjectId(region.region), period: {from: region.from, to: region.to}} })
             };
 
@@ -107,17 +104,16 @@ module.exports = (app) => {
         })
         .put(function (req, res) {
             const id = ObjectId(req.params.id);
-            console.log(req.body);
+            const settlement = req.body;
 
-            /*app.locals.collection
-                .findOneAndUpdate({_id: id}, {$set: {}}, {returnOriginal: false})
+            app.locals.collection
+                .findOneAndUpdate({_id: id}, {$set: settlement}, {returnOriginal: false})
                 .then(function (result) {
-                    const settlement = result.value;
-                    res.send(settlement);
+                    res.send(result.value);
                 })
                 .catch(function (err) {
                     console.log(err);
-                });*/
+                });
         })
         .delete(function (req, res) {
             const id = new ObjectId(req.params.id);
@@ -134,6 +130,99 @@ module.exports = (app) => {
                     res.send(settlement);
                 })
                 .catch(function(err){
+                    console.log(err);
+                });
+        });
+
+    app.route('/api/settlements/:id/localization/:lang')
+        .all(function (req, res, next) {
+            app.locals.collection = app.locals.database.collection('settlements');
+            next();
+        })
+        .put(function (req, res) {
+            const id = ObjectId(req.params.id);
+            const update = { $set: {[`localization.${req.params.lang}`]: {title: req.body.title, description: req.body.description}} };
+            app.locals.collection
+                .findOneAndUpdate({_id: id}, update, {returnOriginal: false})
+                .then(function (settlement) {
+                    res.send(settlement.value);
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+        })
+        .delete(function (req, res) {
+            const id = ObjectId(req.params.id);
+            const update = { $unset: {[`localization.${req.params.lang}`]: ''} };
+            app.locals.collection
+                .findOneAndUpdate({_id: id}, update, {returnOriginal: false})
+                .then(function (settlement) {
+                    res.send(settlement.value);
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+        });
+
+    app.route('/api/settlements/:id/region/:region')
+        .all(function (req, res, next) {
+            app.locals.collection = app.locals.database.collection('settlements');
+            next();
+        })
+        .post(function(req, res) {
+            const id = ObjectId(req.params.id);
+            const regionId = ObjectId(req.params.region);
+            app.locals.collection
+                .findOneAndUpdate({_id: id}, {$push: {regions: {region: regionId, period: req.body.period}}}, {returnOriginal: false})
+                .then(function (settlement) {
+                    app.locals.database.collection('administrativeRegions')
+                        .updateOne({_id: regionId}, {$push: {settlements: {settlement: id, period: req.body.period}}})
+                        .then(function () {
+                            res.send(settlement.value);
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                        });
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+        })
+        .put(function (req, res) {
+            const id = ObjectId(req.params.id);
+            const regionId = ObjectId(req.params.region);
+            app.locals.collection
+                .findOneAndUpdate({_id: id, 'regions.region': regionId}, {$set: {'regions.$.period': req.body.period}}, {returnOriginal: false})
+                .then(function (settlement) {
+                    app.locals.database.collection('administrativeRegions')
+                        .updateOne({_id: regionId, 'settlements.settlement': id}, {$set: {'settlements.$.period': req.body.period}})
+                        .then(function () {
+                            res.send(settlement.value);
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                        });
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+        })
+        .delete(function (req, res) {
+            const id = ObjectId(req.params.id);
+            const regionId = ObjectId(req.params.region);
+            app.locals.collection
+                .findOneAndUpdate({_id: id}, {$pull: {regions: {region: regionId}}}, {returnOriginal: false})
+                .then(function (settlement) {
+                    app.locals.database.collection('administrativeRegions')
+                        .updateOne({_id: regionId}, {$pull: {settlements: {settlement: id}}})
+                        .then(function () {
+                            res.send(settlement.value);
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                        });
+                })
+                .catch(function (err) {
                     console.log(err);
                 });
         });

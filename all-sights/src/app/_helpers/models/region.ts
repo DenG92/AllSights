@@ -1,25 +1,25 @@
 import { Adapter } from './adapter';
 import { ArrayRegion } from './arrayRegion';
 import { ILocalization } from './localization';
-import { IPeriod } from './period';
+import { IPeriod, Period } from './period';
 import { IPopulation } from './population';
 
 export class AdministrativeRegion extends Adapter<AdministrativeRegion> {
   public id: string;
   public localization: ILocalization;
-  public period: IPeriod;
+  public period: Period;
   public area: number;
-  public population: IPopulation;
+  public population: IPopulation[];
   public adminCenter: string;
   public regions: ArrayRegion[];
   public subdivisions: ArrayRegion[];
   public settlements: ArrayRegion[];
 
-  constructor(id: string, localization: ILocalization, period: IPeriod, area: number, population, adminCenter: string, regions: ArrayRegion[], subdivisions: ArrayRegion[], settlements: ArrayRegion[]) {
+  constructor(id: string, localization: ILocalization, period: IPeriod, area: number, population: IPopulation[], adminCenter: string, regions: ArrayRegion[], subdivisions: ArrayRegion[], settlements: ArrayRegion[]) {
     super();
     this.id = id;
     this.localization = localization;
-    this.period = period;
+    this.period = new Period(period.from, period.to);
     this.area = area;
     this.population = population;
     this.adminCenter = adminCenter;

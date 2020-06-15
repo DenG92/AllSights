@@ -1,3 +1,4 @@
 export interface IPopulation {
-  [key: number]: number;
+  year: number;
+  quantity: number;
 }

@@ -1,7 +1,69 @@
 <div class="card">
-  <div class="card-body">
-    <div class="list-group" *ngIf="region">
-      <div class="list-group-item">
+  <div class="card-body" *ngIf="region">
+    <ul class="nav nav-tabs nav-fill" id="region" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="localization-tab" data-toggle="tab" href="#localization" role="tab" aria-controls="localization" aria-selected="true">Localization</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="regions-tab" data-toggle="tab" href="#regions" role="tab" aria-controls="regions" aria-selected="false">Regions</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="subdivisions-tab" data-toggle="tab" href="#subdivisions" role="tab" aria-controls="subdivisions" aria-selected="false">Subdivisions</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="settlements-tab" data-toggle="tab" href="#settlements" role="tab" aria-controls="settlements" aria-selected="false">Settlements</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+        <form [formGroup]="generalForm">
+          <div class="form-group">
+            <label>Administrative center</label>
+            <select class="form-control" [formControlName]="'adminCenter'" title="Administrative center">
+              <ng-container *ngIf="options">
+                <option *ngFor="let settlement of options.settlements" [value]="settlement.value">{{ settlement.label }}</option>
+              </ng-container>
+            </select>
+          </div>
+          <fieldset class="form-group">
+            <label>Period</label>
+            <div class="form-row" [formGroupName]="'period'">
+              <div class="col">
+                <input type="date" class="form-control" [formControlName]="'from'" placeholder="Established">
+              </div>
+              <div class="col">
+                <input type="date" class="form-control" [formControlName]="'to'" placeholder="Eliminated">
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="form-group">
+            <ng-container *ngIf="form.population.controls.length">
+              <label>Population</label>
+              <ng-container *ngFor="let item of form.population.controls; let index = index">
+                <div class="form-row" [formGroup]="item">
+                  <div class="col form-group">
+                    <input type="number" class="form-control" [formControlName]="'year'" placeholder="Year">
+                  </div>
+                  <div class="col form-group">
+                    <input type="number" class="form-control" [formControlName]="'quantity'" placeholder="Quantity">
+                  </div>
+                  <div class="col-1">
+                    <button class="btn btn-outline-dark btn-block" (click)="deletePopulation(index)">
+                      <i>-</i>
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+            <button type="button" class="btn btn-info btn-block" (click)="pushPopulation()">Add population</button>
+          </fieldset>
+          <button type="button" class="btn btn-success btn-block" (click)="update()" [disabled]="!generalForm.dirty">Update</button>
+        </form>
+      </div>
+      <div class="tab-pane fade" id="localization" role="tabpanel" aria-labelledby="localization-tab">
         <form *ngIf="localizationForm">
           <ng-container *ngFor="let localization of localizationForm.controls; let index = index">
             <div class="border border-info rounded p-3 mb-3" [formGroup]="localization">
@@ -42,7 +104,7 @@
         </form>
         <button type="button" class="btn btn-info btn-block" (click)="pushLocalization()">Add localization</button>
       </div>
-      <div class="list-group-item">
+      <div class="tab-pane fade" id="regions" role="tabpanel" aria-labelledby="regions-tab">
         <form *ngIf="regionsForm">
           <ng-container *ngFor="let region of regionsForm.controls; let index = index">
             <div class="border border-info rounded p-3 mb-3" [formGroup]="region">
@@ -79,7 +141,7 @@
         </form>
         <button type="button" class="btn btn-info btn-block" (click)="pushRegion()">Add region</button>
       </div>
-      <div class="list-group-item">
+      <div class="tab-pane fade" id="subdivisions" role="tabpanel" aria-labelledby="subdivisions-tab">
         <form *ngIf="subdivisionsForm">
           <ng-container *ngFor="let region of subdivisionsForm.controls; let index = index">
             <div class="border border-info rounded p-3 mb-3" [formGroup]="region">
@@ -91,11 +153,11 @@
                   </select>
                 </div>
                 <div class="col form-group">
-                  <label>Included from</label>
+                  <label>Includes from</label>
                   <input type="date" class="form-control" [formControlName]="'from'" placeholder="Includes from">
                 </div>
                 <div class="col form-group">
-                  <label>Included to</label>
+                  <label>Includes to</label>
                   <input type="date" class="form-control" [formControlName]="'to'" placeholder="Includes to">
                 </div>
               </div>
@@ -115,6 +177,43 @@
           </ng-container>
         </form>
         <button type="button" class="btn btn-info btn-block" (click)="pushSubdivision()">Add subdivision</button>
+      </div>
+      <div class="tab-pane fade" id="settlements" role="tabpanel" aria-labelledby="settlements-tab">
+        <form *ngIf="settlementsForm">
+          <ng-container *ngFor="let settlement of settlementsForm.controls; let index = index">
+            <div class="border border-info rounded p-3 mb-3" [formGroup]="settlement">
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Settlement</label>
+                  <select class="form-control" [formControlName]="'settlement'" title="Settlement">
+                    <option *ngFor="let settlement of options.settlements" [value]="settlement.value">{{ settlement.label }}</option>
+                  </select>
+                </div>
+                <div class="col form-group">
+                  <label>Includes from</label>
+                  <input type="date" class="form-control" [formControlName]="'from'" placeholder="Includes from">
+                </div>
+                <div class="col form-group">
+                  <label>Includes to</label>
+                  <input type="date" class="form-control" [formControlName]="'to'" placeholder="Includes to">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col">
+                  <button type="button" class="btn btn-danger btn-block" (click)="deleteSettlement(settlement, index)">
+                    Delete
+                  </button>
+                </div>
+                <div class="col">
+                  <button type="button" class="btn btn-success btn-block" (click)="updateSettlement(settlement)" [disabled]="!settlement.dirty">
+                    {{ settlement.controls.settlement.disabled ? 'Update': 'Create' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </form>
+        <button type="button" class="btn btn-info btn-block" (click)="pushSettlement()">Add settlement</button>
       </div>
     </div>
   </div>

@@ -1,9 +1,126 @@
 <div class="card">
-  <div class="card-body">
-    <div class="list-group" *ngIf="settlement">
-      <span class="list-group-item">
-        {{ settlement.localization[language].title }}
-      </span>
+  <div class="card-body" *ngIf="settlement">
+    <ul class="nav nav-tabs nav-fill" id="region" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="localization-tab" data-toggle="tab" href="#localization" role="tab" aria-controls="localization" aria-selected="true">Localization</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="regions-tab" data-toggle="tab" href="#regions" role="tab" aria-controls="regions" aria-selected="false">Regions</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+        <form [formGroup]="generalForm">
+          <div class="form-group">
+            <label>Area</label>
+            <input type="number" class="form-control" [formControlName]="'area'" placeholder="Area">
+          </div>
+          <fieldset class="form-group">
+            <ng-container *ngIf="form.population.controls.length">
+              <label>Population</label>
+              <ng-container *ngFor="let item of form.population.controls; let index = index">
+                <div class="form-row" [formGroup]="item">
+                  <div class="col form-group">
+                    <input type="number" class="form-control" [formControlName]="'year'" placeholder="Year">
+                  </div>
+                  <div class="col form-group">
+                    <input type="number" class="form-control" [formControlName]="'quantity'" placeholder="Quantity">
+                  </div>
+                  <div class="col-1">
+                    <button class="btn btn-outline-dark btn-block" (click)="deletePopulation(index)">
+                      <i>-</i>
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+            <button type="button" class="btn btn-info btn-block" (click)="pushPopulation()">Add population</button>
+          </fieldset>
+          <button type="button" class="btn btn-success btn-block" (click)="update()" [disabled]="!generalForm.dirty">Update</button>
+        </form>
+      </div>
+      <div class="tab-pane fade" id="localization" role="tabpanel" aria-labelledby="localization-tab">
+        <form *ngIf="localizationForm">
+          <ng-container *ngFor="let localization of localizationForm.controls; let index = index">
+            <div class="border border-info rounded p-3 mb-3" [formGroup]="localization">
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Language</label>
+                  <select class="form-control" [formControlName]="'language'" title="Language">
+                    <option value="en">English</option>
+                    <option value="ua">Ukrainian</option>
+                    <option value="ru">Russian</option>
+                  </select>
+                </div>
+                <div class="col form-group">
+                  <label>Title</label>
+                  <input type="text" class="form-control" [formControlName]="'title'" placeholder="Title">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Description</label>
+                  <textarea class="form-control" [formControlName]="'description'" rows="5" title="Description"></textarea>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col">
+                  <button type="button" class="btn btn-danger btn-block" (click)="deleteLocalization(localization, index)">
+                    Delete
+                  </button>
+                </div>
+                <div class="col">
+                  <button type="button" class="btn btn-success btn-block" (click)="updateLocalization(localization)" [disabled]="!localization.dirty">
+                    {{ localization.controls.language.disabled ? 'Update': 'Create' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </form>
+        <button type="button" class="btn btn-info btn-block" (click)="pushLocalization()">Add localization</button>
+      </div>
+      <div class="tab-pane fade" id="regions" role="tabpanel" aria-labelledby="regions-tab">
+        <form *ngIf="regionsForm">
+          <ng-container *ngFor="let region of regionsForm.controls; let index = index">
+            <div class="border border-info rounded p-3 mb-3" [formGroup]="region">
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Included in</label>
+                  <select class="form-control" [formControlName]="'region'" title="Region">
+                    <option *ngFor="let region of regions" [value]="region.value">{{ region.label }}</option>
+                  </select>
+                </div>
+                <div class="col form-group">
+                  <label>Included from</label>
+                  <input type="date" class="form-control" [formControlName]="'from'" placeholder="Included from">
+                </div>
+                <div class="col form-group">
+                  <label>Included to</label>
+                  <input type="date" class="form-control" [formControlName]="'to'" placeholder="Included to">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col">
+                  <button type="button" class="btn btn-danger btn-block" (click)="deleteRegion(region, index)">
+                    Delete
+                  </button>
+                </div>
+                <div class="col">
+                  <button type="button" class="btn btn-success btn-block" (click)="updateRegion(region)" [disabled]="!region.dirty">
+                    {{ region.controls.region.disabled ? 'Update': 'Create' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </form>
+        <button type="button" class="btn btn-info btn-block" (click)="pushRegion()">Add region</button>
+      </div>
     </div>
   </div>
 </div>
+

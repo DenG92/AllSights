@@ -7,15 +7,15 @@ export class Settlement extends Adapter<Settlement> {
   public id: string;
   public localization: ILocalization;
   public area: number;
-  public population: IPopulation;
+  public population: IPopulation[];
   public regions: ArrayRegion[];
 
-  constructor(id: string, localization: ILocalization, area: number, population, regions: ArrayRegion[]) {
+  constructor(id: string, localization: ILocalization, area: number, population: IPopulation[], regions: ArrayRegion[]) {
     super();
     this.id = id;
     this.localization = localization;
     this.area = area;
-    this.population = population;
+    this.population = [];
     this.regions = regions;
   }
 

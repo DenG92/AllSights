@@ -19,43 +19,39 @@
       <tbody>
       <tr *ngFor="let region of regions">
         <td>
-          <div class="list-group">
-            <span class="list-group-item text-center">
-              {{ region.localization[language].title }}
-            </span>
-            <span class="list-group-item text-center">
-              {{ region.period.from | date : 'yyyy.MM.dd' }} - {{(region.period.to | date : 'yyyy.MM.dd') || 'present day' }}
-            </span>
+          <div class="title">
+            <span class="text-center">{{ region.localization[language].title }}</span>
+            <span class="text-center">{{ region.period.toString() }}</span>
           </div>
         </td>
         <td>
-          <span>{{ region.area }} km<sup>2</sup></span>
+          <div class="area">{{ region.area }} km<sup>2</sup></div>
         </td>
         <td>
-          <div class="list-group">
-            <span class="list-group-item" *ngFor="let year of region.population | keyvalue">
-              {{ year.key }}: {{ year.value }}
+          <div class="population">
+            <span class="text-center" *ngFor="let pop of region.population">
+              <b>{{ pop.year }}:</b> {{ pop.quantity }}
             </span>
           </div>
         </td>
         <td>
           <div class="list-group">
             <a class="list-group-item" [routerLink]="[item.id]" *ngFor="let item of region.regions">
-              {{ item.localization[language].title }}
+              {{ item.localization[language].title }}<br/>{{ item.period.toString() }}
             </a>
           </div>
         </td>
         <td>
           <div class="list-group">
             <a class="list-group-item" [routerLink]="[item.id]" *ngFor="let item of region.subdivisions">
-              {{ item.localization[language].title }}
+              {{ item.localization[language].title }}<br/>{{ item.period.toString() }}
             </a>
           </div>
         </td>
         <td>
           <div class="list-group">
             <a class="list-group-item" [routerLink]="['/admin/settlements/' + item.id]" *ngFor="let item of region.settlements">
-              {{ item.localization[language].title }}
+              {{ item.localization[language].title }}<br/>{{ item.period.toString() }}
             </a>
           </div>
         </td>

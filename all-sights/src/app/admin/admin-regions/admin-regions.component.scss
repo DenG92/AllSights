@@ -5,8 +5,39 @@
 }
 
 .table {
+  font-size: 12px;
 
   td {
     vertical-align: inherit;
+
+    .title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .area {
+      white-space: nowrap;
+    }
+
+    .population {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .list-group {
+      overflow: auto;
+      max-height: 500px;
+
+      .list-group-item {
+        padding: 0.25rem;
+        text-align: center;
+      }
+    }
   }
 }

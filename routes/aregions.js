@@ -4,6 +4,7 @@ module.exports = (app) => {
 
     let allRegions = {};
     const getAllRegions = (req, res, next) => {
+        console.time('Get all regions');
         app.locals.database.collection('administrativeRegions')
             .find({})
             .toArray()
@@ -12,6 +13,7 @@ module.exports = (app) => {
                     result[region._id] = region;
                     return result;
                 }, {});
+                console.timeEnd('Get all regions');
                 next()
             })
             .catch(function (err) {
@@ -20,6 +22,7 @@ module.exports = (app) => {
     };
     let allSettlements = {};
     const getAllSettlements = (req, res, next) => {
+        console.time('Get all settlements');
         app.locals.database.collection('settlements')
             .find({})
             .toArray()
@@ -28,6 +31,7 @@ module.exports = (app) => {
                     result[settlement._id] = settlement;
                     return result;
                 }, {});
+                console.timeEnd('Get all settlements');
                 next()
             })
             .catch(function (err) {
@@ -58,11 +62,14 @@ module.exports = (app) => {
         .get(getAllRegions)
         .get(getAllSettlements)
         .get(function (req, res) {
+            const date = null;
+            const condition = date ? {$and: [{$or: [{'period.from': {$lte: date}}, {'period.from': null}]}, {$or: [{'period.to': {$gte: date}}, {'period.to': null}]}]} : {};
             app.locals.collection
-                .find({})
+                .find(condition)
+                .sort({'period.from': -1})
                 .toArray()
                 .then(function (regions) {
-                    console.time('Час перетворення');
+                    console.time('Conversion time');
                     regions.forEach(region => {
                         region.regions.forEach((reg, index) => {
                             region.regions[index].localization = allRegions[reg.region].localization;
@@ -75,7 +82,7 @@ module.exports = (app) => {
                         });
                         region.area = recursiveArea(region);
                     });
-                    console.timeEnd('Час перетворення');
+                    console.timeEnd('Conversion time');
                     res.send(regions);
                 })
                 .catch(function (err) {
@@ -83,13 +90,9 @@ module.exports = (app) => {
                 });
         })
         .post(function (req, res) {
-            const {title, description, language, population, regions, subdivisions, settlements, ...rest} = req.body;
+            const {title, description, language, regions, subdivisions, settlements, ...rest} = req.body;
             const region = {
                 localization: { [language]: {title, description} },
-                population: population.reduce((acc, pop) => {
-                    acc[pop.year] = pop.quantity;
-                    return acc;
-                }, {}),
                 regions: regions.map(region => { return {region: ObjectId(region.region), period: {from: region.from, to: region.to}} }),
                 subdivisions: subdivisions.map(region => { return {region: ObjectId(region.region), period: {from: region.from, to: region.to}} }),
                 settlements: settlements.map(settlement => { return {settlement: ObjectId(settlement.settlement), period: {from: settlement.from, to: settlement.to}} }),
@@ -99,7 +102,6 @@ module.exports = (app) => {
             app.locals.collection
                 .insertOne(region)
                 .then(function () {
-                    console.time('Оновлення');
                     if (region.regions.length) {
                         region.regions.forEach(reg => {
                             app.locals.collection.updateOne({_id: reg.region}, {$push: {subdivisions: {region: region._id, period: reg.period}}})
@@ -112,10 +114,9 @@ module.exports = (app) => {
                     }
                     if (region.settlements.length) {
                         region.settlements.forEach(reg => {
-                            app.locals.database.collection('settlements').updateOne({_id: reg.region}, {$push: {regions: {region: region._id, period: reg.period}}})
+                            app.locals.database.collection('settlements').updateOne({_id: reg.settlement}, {$push: {regions: {region: region._id, period: reg.period}}})
                         });
                     }
-                    console.timeEnd('Оновлення');
                     res.send(region);
                 })
                 .catch(function (err) {
@@ -170,12 +171,12 @@ module.exports = (app) => {
         })
         .put(function (req, res) {
             const id = ObjectId(req.params.id);
+            const region = req.body;
 
             app.locals.collection
-                .findOneAndUpdate({_id: id}, {$set: {}}, {returnOriginal: false})
+                .findOneAndUpdate({_id: id}, {$set: region}, {returnOriginal: false})
                 .then(function (result) {
-                    const region = result.value;
-                    res.send(region);
+                    res.send(result.value);
                 })
                 .catch(function (err) {
                     console.log(err);
@@ -247,6 +248,31 @@ module.exports = (app) => {
             app.locals.collection = app.locals.database.collection('administrativeRegions');
             next();
         })
+        .post(function(req, res) {
+            const id = ObjectId(req.params.id);
+            const regionId = ObjectId(req.params.region);
+            const arr = {
+                parent: req.body.parent,
+                child: req.body.child
+            };
+            let update = { $push: {[`${arr.parent}`]: {region: regionId, period: req.body.period}} };
+            app.locals.collection
+                .findOneAndUpdate({_id: id}, update, {returnOriginal: false})
+                .then(function (region) {
+                    update = { $push: {[`${arr.child}`]: {region: id, period: req.body.period}} };
+                    app.locals.collection
+                        .updateOne({_id: regionId}, update)
+                        .then(function () {
+                            res.send(region.value);
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                        });
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+        })
         .put(function (req, res) {
             const id = ObjectId(req.params.id);
             const regionId = ObjectId(req.params.region);
@@ -282,17 +308,76 @@ module.exports = (app) => {
                 child: req.query.child
             };
             let update = { $pull: {[`${arr.parent}`]: {region: regionId}} };
-            console.log(update);
             app.locals.collection
                 .findOneAndUpdate({_id: id}, update, {returnOriginal: false})
                 .then(function (region) {
-                    console.log(region);
                     update = { $pull: {[`${arr.child}`]: {region: id}} };
-                    console.log(update);
                     app.locals.collection
-                        .findOneAndUpdate({_id: regionId}, update, {returnOriginal: false})
-                        .then(function (reg) {
-                            console.log(reg);
+                        .updateOne({_id: regionId}, update)
+                        .then(function () {
+                            res.send(region.value);
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                        });
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+        });
+
+    app.route('/api/regions/administrative/:id/settlement/:settlement')
+        .all(function (req, res, next) {
+            app.locals.collection = app.locals.database.collection('administrativeRegions');
+            next();
+        })
+        .post(function(req, res) {
+            const id = ObjectId(req.params.id);
+            const settlementId = ObjectId(req.params.settlement);
+            app.locals.collection
+                .findOneAndUpdate({_id: id}, {$push: {settlements: {settlement: settlementId, period: req.body.period}}}, {returnOriginal: false})
+                .then(function (region) {
+                    app.locals.database.collection('settlements')
+                        .updateOne({_id: settlementId}, {$push: {regions: {region: id, period: req.body.period}}})
+                        .then(function () {
+                            res.send(region.value);
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                        });
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+        })
+        .put(function (req, res) {
+            const id = ObjectId(req.params.id);
+            const settlementId = ObjectId(req.params.settlement);
+            app.locals.collection
+                .findOneAndUpdate({_id: id, 'settlements.settlement': settlementId}, {$set: {'settlements.$.period': req.body.period}}, {returnOriginal: false})
+                .then(function (region) {
+                    app.locals.database.collection('settlements')
+                        .updateOne({_id: settlementId, 'regions.region': id}, {$set: {'regions.$.period': req.body.period}})
+                        .then(function () {
+                            res.send(region.value);
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                        });
+                })
+                .catch(function (err) {
+                    console.log(err);
+                });
+        })
+        .delete(function (req, res) {
+            const id = ObjectId(req.params.id);
+            const settlementId = ObjectId(req.params.settlement);
+            app.locals.collection
+                .findOneAndUpdate({_id: id}, {$pull: {settlements: {settlement: settlementId}}}, {returnOriginal: false})
+                .then(function (region) {
+                    app.locals.database.collection('settlements')
+                        .updateOne({_id: settlementId}, {$pull: {regions: {region: id}}})
+                        .then(function () {
                             res.send(region.value);
                         })
                         .catch(function (err) {
